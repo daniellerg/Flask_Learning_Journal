@@ -5,6 +5,7 @@ from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 
 import models
+import datetime
 
 
 def name_exists(form, field):
@@ -55,8 +56,8 @@ class LoginForm(Form):
 
 
 class EntryForm(Form):
-    title = StringField('Title', validators=[DataRequired()})
+    title = StringField('Title', validators=[DataRequired()])
     entry_date = DateTimeField('Date', default=datetime.date.today)
-    time_spent = IntegerField('Time Spent', validators=[DataRequired())
-    learned = TextAreaField('Things Learned', validators=[DataRequired()] )
-    resources = TextAreaField('Resources to Remember', validators=[DataRequired())
+    time_spent = IntegerField('Time Spent', validators=[DataRequired()])
+    learned = TextAreaField('Things Learned', validators=[DataRequired()])
+    resources = TextAreaField('Resources to Remember', validators=[DataRequired()])

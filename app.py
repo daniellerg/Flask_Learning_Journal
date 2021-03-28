@@ -70,9 +70,9 @@ def login():
     return render_template('login.html', form=form)
 
 
- @app.route('/logout')      
- @login_required
- def logout():
+@app.route('/logout')      
+@login_required
+def logout():
      logout_user()
      flash('You logged out successfully.', 'success')
      return redirect(url_for('index')) 
@@ -154,9 +154,12 @@ if __name__ == '__main__':
         pass
     try:
         models.Entry.create_entry(
-            title='Hello', date='date', 
-            time_spent=5, learned='python', 
-            resources='python'
+            title='Hello', 
+            entry_date='03/27/2021', 
+            time_spent=5, 
+            learned='python', 
+            resources='python',
+            user=current_user
             )
     except ValueError:
         pass

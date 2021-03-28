@@ -26,7 +26,7 @@ class User(UserMixin, Model):
     @classmethod
     def create_user(cls, username, email, password, admin=False):
         try:
-            with models.db.transaction():
+            with db.transaction():
                 cls.create(
                     username=username,
                     email=email,
@@ -55,7 +55,7 @@ class Entry(Model):
         try:
             cls.create(
                 title=title, 
-                entry_date=date,
+                entry_date=entry_date,
                 time_spent=time_spent,
                 learned=learned,
                 resources=resources, 
