@@ -11,6 +11,7 @@ import forms
 app = Flask(__name__)
 app.secret_key = '#(SJ(DGKncn9ee#$#@dkduedj)%K'
 
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -57,8 +58,8 @@ def login():
     if form.validate_on_submit():
         try:
             user = models.User.get(models.User.email == form.email.data)
-            except models.DoesNotExist:
-                flash('Email or password does not match, please try again', 'error')
+        except models.DoesNotExist:
+            flash('Email or password does not match, please try again', 'error')
         else:
             if check_password_hash(user.password, form.password.data):
                 login_user(user)
@@ -67,6 +68,7 @@ def login():
             else:
                 flash('Email or password does not match, please try again', 'error')
     return render_template('login.html', form=form)
+
 
  @app.route('/logout')      
  @login_required
@@ -78,29 +80,60 @@ def login():
 
 @app.route('/')
 @app.route('/entries')
+@login_required
 def index():
-    stream = models.JournalList.select().limit(25).order_by(models.Entry.date.desc())
+    stream = models.Entry.select().limit(25).order_by(models.Entry.entry_date)
     render_template('index.html', stream=stream)
 
 
 @app.route('/entries/new', methods=('GET', 'POST'))
+@login_required
 def create():
-    pass
+    form = forms.EntryForm()
+    if form.validate_on_submit():
+        try:
+            models.Entry.create_entry(
+                title=form.title.data,
+                entry_date=form.entry_date.data,
+                time_spent=form.time_spent.data,
+                learned=form.learned.data,
+                resources=form.resources.data,
+                user=g.user.get_current_object()
+            )
+            return redirect(url_for('index'))
+        except IntegrityError:
+            pass
+    return render_template('new.html', form=form)
 
 
-@app.route('/entries/<id>', methods=('GET', 'POST'))
-def detail(id):
-    pass
+@app.route('/entries/<int:entry_id>', methods=('GET', 'POST'))
+@login_required
+def detail(entry_id):
+    try:
+        entry = models.Entry.select().where(models.Entry.entry_id==entry_id)
+        return render_template('detail.html', entry=entry)
+    except DoesNotExist:
+        abort(404)
+    return render_template('index.html')
 
 
-@app.route('/entries/<id>/edit', methods=('GET', 'POST'))
-def edit(id):
-    pass
+@app.route('/entries/<int:entry_id>/edit', methods=('GET', 'POST'))
+@login_required
+def edit(entry_id):
+    updated_entry = models.Entry.get(models.Entry.entry_id==entry_id)
+    updated_entry
 
 
-@app.route('/entries/<id>/delete', methods=('GET', 'POST'))
-def delete(id):
-    pass
+@app.route('/entries/<int:entry_id>/delete', methods=('GET', 'POST'))
+@login_required
+def delete(entry_id):
+    try:
+        models.Entry.get(entry_id).delete_instance()
+    except models.IntegrityError:
+        pass
+    else:
+        flash('Entry deleted.', 'success')
+    return render_template('index.html')
 
 
 @app.errorhandler(404)

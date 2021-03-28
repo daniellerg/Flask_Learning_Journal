@@ -1,5 +1,6 @@
 from flask_wtf import Form
-from wtforms import StringField, PasswordField
+from wtforms import (StringField, PasswordField, DateTimeField, 
+                    IntegerField, TextAreaField)
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 
@@ -51,3 +52,11 @@ class RegisterForm(Form):
 class LoginForm(Form):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+
+
+class EntryForm(Form):
+    title = StringField('Title', validators=[DataRequired()})
+    entry_date = DateTimeField('Date', default=datetime.date.today)
+    time_spent = IntegerField('Time Spent', validators=[DataRequired())
+    learned = TextAreaField('Things Learned', validators=[DataRequired()] )
+    resources = TextAreaField('Resources to Remember', validators=[DataRequired())
