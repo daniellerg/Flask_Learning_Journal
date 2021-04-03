@@ -6,7 +6,7 @@
     <div class="container">
         <div class="entry-list">
             <article>                   
-                <h2><a href="{{ url_for('detail.html', entry_id=entry.id ) }}">{{ entry.title }} </a></h2>
+                <h2><a href="{{ url_for('detail', entry_id=entry.id ) }}">{{ entry.title }} </a></h2>
                 <time datetime="{{ entry.entry_date.strftime('%m/%d/%Y') }}">{{ entry.entry_date }}</time>
             </article>
         </div>

@@ -27,7 +27,7 @@ def load_user(userid):
 
 @app.before_request
 def before_request():
-    g.db = models.db
+    g.db = models.DATABASE
     g.db.connect()
     g.user = current_user
 
@@ -40,34 +40,34 @@ def after_request(response):
 
 @app.route('/register', methods=('GET', 'POST'))
 def register():
-    form = forms.RegisterForm()
-    if form.validate_on_submit():
-        flash('You have registered successfully!', 'success')
+    r_form = forms.RegisterForm()
+    if r_form.validate_on_submit():
         models.User.create_user(
-            username=form.username.data,
-            email=form.email.data,
-            password=form.password.data
+            username=r_form.username.data,
+            email=r_form.email.data,
+            password=r_form.password.data
         )
+        flash('You have registered successfully!', 'success')
         return redirect(url_for('index'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', r_form=r_form)
 
 
 @app.route('/login', methods=('GET', 'POST'))
 def login():
-    form = forms.LoginForm()
-    if form.validate_on_submit():
+    login_form = forms.LoginForm()
+    if login_form.validate_on_submit():
         try:
-            user = models.User.get(models.User.email == form.email.data)
+            user = models.User.get(models.User.email == login_form.email.data)
         except models.DoesNotExist:
-            flash('Email or password does not match, please try again', 'error')
+            flash('Email does not match, please try again', 'error')
         else:
-            if check_password_hash(user.password, form.password.data):
+            if check_password_hash(user.password, login_form.password.data):
                 login_user(user)
                 flash('You are logged in!', 'success')
                 return redirect(url_for('index'))
             else:
                 flash('Email or password does not match, please try again', 'error')
-    return render_template('login.html', form=form)
+    return render_template('login.html', login_form=login_form)
 
 
 @app.route('/logout')      
@@ -83,36 +83,34 @@ def logout():
 @login_required
 def index():
     stream = models.Entry.select().limit(25).order_by(models.Entry.entry_date)
-    render_template('index.html', stream=stream)
+    return render_template('index.html', stream=stream)
 
 
 @app.route('/entries/new', methods=('GET', 'POST'))
 @login_required
-def create():
-    form = forms.EntryForm()
-    if form.validate_on_submit():
-        try:
-            models.Entry.create_entry(
-                title=form.title.data,
-                entry_date=form.entry_date.data,
-                time_spent=form.time_spent.data,
-                learned=form.learned.data,
-                resources=form.resources.data,
-                user=g.user.get_current_object()
-            )
-            return redirect(url_for('index'))
-        except IntegrityError:
-            pass
-    return render_template('new.html', form=form)
+def new_entry():
+    entry_form = forms.EntryForm()
+    if entry_form.validate_on_submit():
+        models.Entry.create_entry(
+            user=g.user._get_current_object(),
+            title=entry_form.title.data,
+            entry_date=entry_form.entry_date.data,
+            time_spent=entry_form.time_spent.data,
+            learned=entry_form.learned.data,
+            resources=entry_form.resources.data,
+        )
+        flash('Entry posted!', 'success')
+        return redirect(url_for('index'))
+    return render_template('new.html', entry_form=entry_form)
 
 
 @app.route('/entries/<int:entry_id>', methods=('GET', 'POST'))
 @login_required
 def detail(entry_id):
     try:
-        entry = models.Entry.select().where(models.Entry.entry_id==entry_id)
+        entry = models.Entry.get(models.Entry.id==entry_id)
         return render_template('detail.html', entry=entry)
-    except DoesNotExist:
+    except models.DoesNotExist:
         abort(404)
     return render_template('index.html')
 
@@ -120,8 +118,19 @@ def detail(entry_id):
 @app.route('/entries/<int:entry_id>/edit', methods=('GET', 'POST'))
 @login_required
 def edit(entry_id):
-    updated_entry = models.Entry.get(models.Entry.entry_id==entry_id)
-    updated_entry
+    updated_entry = models.Entry.get(models.Entry.id==entry_id)
+    updated_form = forms.EntryForm()
+    if updated_form.validate_on_submit():
+        title=updated_entry.title.data
+        entry_date=updated_entry.entry_date.data
+        time_spent=updated_entry.time_spent.data
+        learned=updated_entry.learned.data
+        resources=updated_entry.resources.data
+        updated_entry.save()  
+        flash('Entry updated!')
+        return redirect(url_for('index'))
+    return render_template('edit.html', updated_entry=updated_entry, updated_form=updated_form)
+    
 
 
 @app.route('/entries/<int:entry_id>/delete', methods=('GET', 'POST'))
@@ -142,26 +151,6 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    models.initialize()
-    try:
-        models.User.create_user(
-            username='danig',
-            email='dfleharty@gmail.com',
-            password='python',
-            admin=True
-        )
-    except ValueError:
-        pass
-    try:
-        models.Entry.create_entry(
-            title='Hello', 
-            entry_date='03/27/2021', 
-            time_spent=5, 
-            learned='python', 
-            resources='python',
-            user=current_user
-            )
-    except ValueError:
-        pass
+    models.initialize()  
     app.run(debug=True, port=8000, host='localhost')
 

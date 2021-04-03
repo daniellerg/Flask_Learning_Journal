@@ -1,6 +1,6 @@
 from flask_wtf import Form
 from wtforms import (StringField, PasswordField, DateTimeField, 
-                    IntegerField, TextAreaField)
+                    DateField, IntegerField, TextAreaField)
 from wtforms.validators import (DataRequired, Regexp, ValidationError, Email,
                                 Length, EqualTo)
 
@@ -9,12 +9,12 @@ import datetime
 
 
 def name_exists(form, field):
-    if User.select().where(User.username == field.data).exists():
+    if models.User.select().where(models.User.username == field.data).exists():
         raise ValidationError('User already exists by that name.')
 
 
 def email_exists(form, field):
-    if User.select().where(User.email == field.data).exists():
+    if models.User.select().where(models.User.email == field.data).exists():
         raise ValidationError('User already exists with that email.')
 
 
@@ -40,7 +40,7 @@ class RegisterForm(Form):
         'Password',
         validators=[
             DataRequired(),
-            Length(min=5),
+            Length(min=4),
             EqualTo('password2', message='Passwords must match.')
         ])
     password2 = PasswordField(
@@ -56,8 +56,8 @@ class LoginForm(Form):
 
 
 class EntryForm(Form):
-    title = StringField('Title', validators=[DataRequired()])
-    entry_date = DateTimeField('Date', default=datetime.date.today)
+    title = StringField('Title of Entry', validators=[DataRequired()])
+    entry_date = DateField('mm/dd/yyyy', format='%m/%d/%Y', validators=[DataRequired()])
     time_spent = IntegerField('Time Spent', validators=[DataRequired()])
     learned = TextAreaField('Things Learned', validators=[DataRequired()])
     resources = TextAreaField('Resources to Remember', validators=[DataRequired()])

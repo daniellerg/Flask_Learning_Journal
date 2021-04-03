@@ -3,8 +3,8 @@
 
 {% block content %}
 <form method="POST" action="" class="form">
-    {{ form.hidden.tag() }}
-    {% for field in form %}
+    {{ r_form.hidden_tag() }}
+    {% for field in r_form %}
         {{ render_field(field) }}
     {% endfor %}
     <button type="submit" id="submit">Register</button>

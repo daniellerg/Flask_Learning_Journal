@@ -1,22 +1,24 @@
 {% extends "layout.html" %}
+{% from 'macros.html' import render_field %}
 
 {% block content %}
 <div class="container">
     <div class="edit-entry">
         <h2>Edit Entry</h2>
-        <form>
-            <label for="title"> Title</label>
-            <input id="title" type="text" name="title"><br>
-            <label for="date">Date</label>
-            <input id="date" type="date" name="date"><br>
-            <label for="time-spent"> Time Spent</label>
-            <input id="time-spent" type="text" name="timeSpent"><br>
-            <label for="what-i-learned">What I Learned</label>
-            <textarea id="what-i-learned" rows="5" name="whatILearned"></textarea>
-            <label for="resources-to-remember">Resources to Remember</label>
-            <textarea id="resources-to-remember" rows="5" name="ResourcesToRemember"></textarea>
-            <input type="submit" value="Publish Entry" class="button">
-            <a href="#" class="button button-secondary">Cancel</a>
+        <form method="POST", action="" class="form">
+            {{ updated_form.hidden_tag() }}                  
+            <label for="title"> Title:</label>
+            <textarea id="title" rows="1" name="title">{{ updated_entry.title }}</textarea>
+            <p><label for="date">Date:</label></p>
+            <textarea id="date" rows="1" name="date">{{ updated_entry.entry_date }}</textarea>
+            <p><label for="time-spent"> Time Spent:</label></p>
+            <textarea id="time-spent" rows="1" name="timeSpent">{{ updated_entry.time_spent }}</textarea>
+            <p><label for="what-i-learned">What I Learned:</label></p>
+            <textarea id="what-i-learned" rows="5" name="whatILearned">{{ updated_entry.learned }}</textarea>
+            <p><label for="resources-to-remember">Resources to Remember:</label></p>
+            <textarea id="resources-to-remember" rows="5" name="ResourcesToRemember">{{ updated_entry.resources }}</textarea>
+            <p><button type="submit" id='submit' class="button">Edit Entry</button></p>
+            <p><a href="{{ url_for('index') }}" class="button" title="">Cancel</a></p>
         </form>
     </div>
 </div>
