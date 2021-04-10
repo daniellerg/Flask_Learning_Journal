@@ -29,7 +29,7 @@ class User(UserMixin, Model):
                     email=email,
                     password=generate_password_hash(password),
                     is_admin=admin 
-                )
+                    )
         except IntegrityError:
             raise ValueError('User already exists.')
 
@@ -48,7 +48,8 @@ class Entry(Model):
         order_by = ('-entry_date',)
 
     @classmethod
-    def create_entry(cls, title, entry_date, time_spent, learned, resources, user):
+    def create_entry(cls, title, entry_date, 
+                    time_spent, learned, resources, user):
         cls.create(
             title=title, 
             entry_date=entry_date,
@@ -57,21 +58,9 @@ class Entry(Model):
             resources=resources, 
             user=user
             )
-        
-
-
-class Tag(Model):
-    one = ForeignKeyField(User, related_name='relationships')
-    many = ForeignKeyField(User, related_name='related_to')
-
-    class Meta:
-        database = DATABASE
-        indexes = (
-            (('one', 'many'), True),
-        )
     
 
 def initialize():
     DATABASE.connect()
-    DATABASE.create_tables([User, Entry, Tag], safe=True)
+    DATABASE.create_tables([User, Entry], safe=True)
     DATABASE.close()

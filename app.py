@@ -1,5 +1,5 @@
 from flask import (Flask, render_template, redirect, 
-                    url_for, g, flash, abort)
+                    url_for, g, flash, abort, request)
 from flask_login import (current_user, LoginManager, 
                         login_user, logout_user, login_required)
 from flask_bcrypt import generate_password_hash, check_password_hash
@@ -46,7 +46,7 @@ def register():
             username=r_form.username.data,
             email=r_form.email.data,
             password=r_form.password.data
-        )
+            )
         flash('You have registered successfully!', 'success')
         return redirect(url_for('index'))
     return render_template('register.html', r_form=r_form)
@@ -66,7 +66,9 @@ def login():
                 flash('You are logged in!', 'success')
                 return redirect(url_for('index'))
             else:
-                flash('Email or password does not match, please try again', 'error')
+                flash(
+                    'Email or password does not match, please try again', 
+                    'error')
     return render_template('login.html', login_form=login_form)
 
 
@@ -98,7 +100,7 @@ def new_entry():
             time_spent=entry_form.time_spent.data,
             learned=entry_form.learned.data,
             resources=entry_form.resources.data,
-        )
+            )
         flash('Entry posted!', 'success')
         return redirect(url_for('index'))
     return render_template('new.html', entry_form=entry_form)
@@ -118,31 +120,49 @@ def detail(entry_id):
 @app.route('/entries/<int:entry_id>/edit', methods=('GET', 'POST'))
 @login_required
 def edit(entry_id):
-    updated_entry = models.Entry.get(models.Entry.id==entry_id)
+    try:
+        updated_entry = models.Entry.get(models.Entry.id==entry_id)
+    except models.DoesNotExist:
+        abort(404)
     updated_form = forms.EntryForm()
-    if updated_form.validate_on_submit():
-        title=updated_entry.title.data
-        entry_date=updated_entry.entry_date.data
-        time_spent=updated_entry.time_spent.data
-        learned=updated_entry.learned.data
-        resources=updated_entry.resources.data
-        updated_entry.save()  
-        flash('Entry updated!')
-        return redirect(url_for('index'))
-    return render_template('edit.html', updated_entry=updated_entry, updated_form=updated_form)
+    if current_user == updated_entry.user:
+        if request.method == 'GET':
+            updated_form.title.data = updated_entry.title
+            updated_form.entry_date.data = updated_entry.entry_date
+            updated_form.time_spent.data = updated_entry.time_spent
+            updated_form.learned.data = updated_entry.learned
+            updated_form.resources.data = updated_entry.resources
+        elif updated_form.validate_on_submit():
+            updated_entry.title = updated_form.title.data
+            updated_entry.entry_date = updated_form.entry_date.data
+            updated_entry.time_spent = updated_form.time_spent.data
+            updated_entry.learned = updated_form.learned.data
+            updated_entry.resources = updated_form.resources.data
+            updated_entry.save()  
+            flash('Entry updated!')
+            return redirect(url_for('index', entry_id=entry_id))
+    elif current_user != updated_entry.user:
+        flash('Only the creator can edit this entry.', 'success')
+        return render_template('index.html')        
+    else:
+        return render_template('edit.html', updated_entry=updated_entry, 
+                                updated_form=updated_form)
     
-
 
 @app.route('/entries/<int:entry_id>/delete', methods=('GET', 'POST'))
 @login_required
 def delete(entry_id):
-    try:
-        models.Entry.get(entry_id).delete_instance()
-    except models.IntegrityError:
-        pass
+    entry = models.Entry.get(models.Entry.id==entry_id)
+    if current_user == entry.user:
+        try:
+            entry.delete_instance()
+            flash('Entry deleted.', 'success')
+            return redirect(url_for('index'))
+        except models.IntegrityError:
+            return render_template('404.html'), 404           
     else:
-        flash('Entry deleted.', 'success')
-    return render_template('index.html')
+        flash('Entry can only be deleted by the creator', 'error')
+        return render_template('index.html')
 
 
 @app.errorhandler(404)

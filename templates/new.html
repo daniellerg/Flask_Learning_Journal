@@ -6,14 +6,14 @@
     <div class="container">
         <div class="new-entry">
             <h2>New Entry</h2>
-            <form method="POST", action="" class="form">
+            <form method="POST", action="" class="new-entry">
                 {{ entry_form.hidden_tag() }}
                 {% for field in entry_form %}
                     {{ field.label }}
                     {{ render_field(field) }}                          
                 {% endfor %}
-                <button type="submit" id="submit" class="button">Publish Entry</button>
-                <a href="{{ url_for('index') }}" class="button button-secondary">Cancel Entry</a>
+                <button type="submit" id="submit" class="button.icon-left">Publish Entry</button>
+                <a href="{{ url_for('index') }}" class="button.icon-left">Cancel Entry</a>
             </form>
         </div>
     </div>
