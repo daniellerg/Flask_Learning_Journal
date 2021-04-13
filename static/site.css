@@ -7,7 +7,7 @@
 body {
 	font-size: 16px;
 	color: #404a49;
-	font-family: 'Cousine', serif;
+	font-family: 'Chalkduster', serif;
 	font-weight: 400;
 }
 .container {
@@ -17,9 +17,10 @@ body {
 header .site-header {
 	margin: 0 auto;
 	height: 95px;
+	padding: 0%;
 }
 header .logo i {
-	color: #678f89;
+	color: #102c28;
 	margin: 20px 0 0 -5px;
 	float: left;
 	font-size: 40px;
@@ -31,7 +32,7 @@ header .button {
 footer {
 	text-align: center;
 	padding: 35px 0;
-	border-top: 2px dotted #678f89;
+	border-top: 2px dotted #102c28;
 }
 
 
@@ -42,10 +43,9 @@ footer {
 
 .button {
 	padding: 8px 10px 6px 10px;
-	background: #678f89;
-	border: 2px solid #678f89;
+	background: #102c28;
+	border: 2px solid #102c28;
 	border-radius: 4px;
-	text-decoration: none;
 	color: #FFF;
 	position: relative;
 	text-align: center;
@@ -59,10 +59,13 @@ footer {
 .button.icon-right {
 	padding-right: 30px;
 	top: -10px;
+	margin: 10px 10px 10px 10px;
+	float: right;
 }
 .button.icon-left {
 	padding-left: 30px;
 	top: -10px;
+	margin: 0 10px 0 0;
 }
 .button.icon-right i {
 	position: absolute;
@@ -77,7 +80,6 @@ footer {
 .button:focus {
 	outline: 0;
 }
-
 
 
 /* ==========================================================================
@@ -95,12 +97,16 @@ h3 {
 h1 {
 	font-size: 44px;
 	margin-bottom: 12px;
+	text-decoration: underline;
 }
 h2 {
 	font-size: 32px;
+	padding: 20px;
+	text-decoration: underline;
 }
 h2 a {
 	text-decoration: none;
+	text-align: center;
 	color: #000;
 }
 h3 {

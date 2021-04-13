@@ -2,15 +2,13 @@
 
 {% block content %}
 <section>
+    <div class="entry-list">
     {% for entry in stream %}  
-    <div class="container">
-        <div class="entry-list">
-            <article>                   
+            <article> 
                 <h2><a href="{{ url_for('detail', entry_id=entry.id ) }}">{{ entry.title }} </a></h2>
                 <time datetime="{{ entry.entry_date.strftime('%m/%d/%Y') }}">{{ entry.entry_date }}</time>
             </article>
-        </div>
-    </div>
     {% endfor %}
+    </div>
 </section>
 {% endblock %}

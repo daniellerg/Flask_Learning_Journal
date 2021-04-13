@@ -140,12 +140,11 @@ def edit(entry_id):
             updated_entry.resources = updated_form.resources.data
             updated_entry.save()  
             flash('Entry updated!')
-            return redirect(url_for('index', entry_id=entry_id))
+            return redirect(url_for('detail', entry_id=entry_id))
     elif current_user != updated_entry.user:
         flash('Only the creator can edit this entry.', 'success')
-        return render_template('index.html')        
-    else:
-        return render_template('edit.html', updated_entry=updated_entry, 
+        return render_template('index.html')      
+    return render_template('edit.html', updated_entry=updated_entry, 
                                 updated_form=updated_form)
     
 
