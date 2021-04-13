@@ -8,6 +8,7 @@
         <form method="POST" action="" class="edit-entry">
             {{ updated_form.hidden_tag() }} 
             {% for field in updated_form %}
+                {{ field.label }}
                 {{ render_field(field) }}
             {% endfor %}
             <p><button type="submit" id='submit' class="button">Save Edited Entry</button></p>
