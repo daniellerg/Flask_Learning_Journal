@@ -60,7 +60,7 @@ class EntryForm(Form):
     title = StringField('Title of Entry', validators=[DataRequired()])
     entry_date = DateField('mm/dd/yyyy', 
                         format='%m/%d/%Y', validators=[DataRequired()])
-    time_spent = IntegerField('Time Spent (minutes)', 
+    time_spent = IntegerField('Time Spent-Minutes', 
                             validators=[DataRequired()])
     learned = TextAreaField('Things Learned', validators=[DataRequired()])
     resources = TextAreaField('Resources to Remember', 
